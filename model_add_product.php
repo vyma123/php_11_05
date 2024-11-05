@@ -66,16 +66,19 @@
     </div>
   </div>
 
+  <div id="load_property">
   <div class="field featured_image_box">
   <label>Category</label>
-  <select name="tags[]" multiple class="select_property">
+  <select name="categories[]" multiple class="select_property">
             <?php
+$selected_categories = isset($_POST['categories']) ? $_POST['categories'] : [];
+
             
             $type_ = 'category';
             $categories = select_property($pdo, $type_);
              if($categories) {
                 foreach ($categories as $category){
-                    // $selected_category = in_array($category['id'], $selected_categories) && empty($productId) ? 'selected' : '';
+                    $selected_category = in_array($category['id'], $selected_categories) && empty($productId) ? 'selected' : '';
             ?>
             <option value="<?= htmlspecialchars($category['id']) ?>" >
                 <?= htmlspecialchars($category['name_']) ?>
@@ -87,12 +90,13 @@
   <label>Tag</label>
   <select name="tags[]" multiple class="select_property">
             <?php
+$selected_tags = isset($_POST['tags']) ? $_POST['tags'] : [];
             
             $type_ = 'tag';
             $tags = select_property($pdo, $type_);
              if($tags) {
                 foreach ($tags as $tag){
-                    // $selected_category = in_array($category['id'], $selected_categories) && empty($productId) ? 'selected' : '';
+                    $selected_tag = in_array($category['id'], $selected_tags) && empty($productId) ? 'selected' : '';
             ?>
             <option value="<?= htmlspecialchars($tag['id']) ?>" >
                 <?= htmlspecialchars($tag['name_']) ?>
@@ -100,6 +104,8 @@
             <?php }} ?>
     </select>
   </div>
+  </div>
+
   <div class="box_button_add">
       <button id="close_product" class="ui button" type="submit">Close</button>
       <button class="ui button" type="submit">Submit</button>

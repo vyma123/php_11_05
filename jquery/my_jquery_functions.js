@@ -126,9 +126,10 @@ $(document).on('submit', '#saveProduct', function(e){
 			}
 			else if (res.status == 200) {
 				$('#okMessage_product').removeClass('d-none').fadeIn(400); 
-                $('#saveProduct')[0].reset();
 				$('#uploadedImage').attr('src', '').hide();
 				$('#featured_image').val(''); 
+				$('#galleryPreviewContainer').empty();
+                $('#saveProduct')[0].reset();
 
                 setTimeout(function() {
                     $('#okMessage_product').fadeOut(400, function() {
@@ -211,6 +212,7 @@ $(document).on('submit', '#saveProperty', function(e){
 			}else if (res.status == 200) {
 				$('#okMessage').removeClass('d-none').fadeIn(400); 
                 $('#saveProperty')[0].reset();
+				$('#load_property').load(location.href + " #load_property");
 
                 setTimeout(function() {
                     $('#okMessage').fadeOut(400, function() {
