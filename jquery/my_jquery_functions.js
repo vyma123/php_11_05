@@ -28,6 +28,33 @@ $('#featured_image').on('change', function() {
 });
 
 
+$('#gallery').on('change', function() {
+	// Clear previous images in the gallery preview container
+	$('#galleryPreviewContainer').empty();
+	
+	// Loop through each selected file
+	if (this.files) {
+		for (let i = 0; i < this.files.length; i++) {
+			let file = this.files[i];
+			let reader = new FileReader();
+			
+			reader.onload = function(e) {
+				// Create a new img element for each gallery image
+				const img = $('<img>', {
+					src: e.target.result,
+					alt: 'Gallery Image',
+					style: 'height: 80px;'
+				});
+				// Append the new img element to the gallery preview container
+				$('#galleryPreviewContainer').append(img);
+			};
+			reader.readAsDataURL(file); // Read each file
+		}
+	}
+});
+
+
+
 $(document).on('submit', '#saveProduct', function(e){
 	e.preventDefault();
 
@@ -63,7 +90,7 @@ $(document).on('submit', '#saveProduct', function(e){
                 }, 3500);
 
 
-				
+
             }else if (res.status == 400) {
 
 				

@@ -25,8 +25,16 @@ function insert_product(object $pdo, string $product_name, string $sku, string $
         $stmt->bindParam(":price", $price);
         $stmt->bindParam(":featured_image", $featured_image);
         $stmt->execute($data);
+        return $pdo->lastInsertId();
 }
 
+function add_product_property(PDO $pdo, int $product_id, int $property_id) {
+    $query = "INSERT INTO product_property (product_id, property_id) VALUES (:product_id, :property_id);";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(":product_id", $product_id);
+    $stmt->bindParam(":property_id", $property_id);
+    $stmt->execute();
+}
 
 function insert_property(object $pdo, string $type_, string $name_) {
     try {
@@ -39,7 +47,7 @@ function insert_property(object $pdo, string $type_, string $name_) {
         $stmt = $pdo->prepare($query);
         
         if ($stmt->execute($data)) {
-            return true; 
+            return $pdo->lastInsertId(); 
         } else {
             return false; 
         }

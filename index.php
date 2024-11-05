@@ -12,7 +12,13 @@ require_once './includes/functions.php';
     <link rel="stylesheet" href="styles/style.css" type="text/css">
 
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    
+   <style>
+    .box_gallery{
+    display: flex ;
+    align-items: center;
+    justify-content: space-between;
+}
+   </style>
     <!-- link semantic ui -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css"  />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

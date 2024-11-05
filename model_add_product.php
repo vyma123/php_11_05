@@ -32,20 +32,40 @@
     <label>Price</label>
     <input type="text" name="price" id="price" placeholder="Price">
   </div>
-  <div class="field featured_image_box">
+  <!-- <div class="field featured_image_box">
     <label>Featured Image</label>
     <div id="resultContainer" class="ui small image">
     <img height="80" src="" id="uploadedImage">
-    <input class="featured_image" type="file" name="featured_image" id="featured_image">
+    <input accept="image/*" class="featured_image" type="file" name="featured_image" id="featured_image">
     </div>
   </div>
+ -->
+
+  <div class="field featured_image_box">
+    <label>Featured Image</label>
+    <div class="box_gallery">
+      <div id="resultContainer" >
+        <img src="" alt="featured Image" id="uploadedImage" style="display: none; height: 80px; max-width: 100%;" />
+      </div>
+      <div class="ui small image">
+        <input accept="image/*" type="file" name="featured_image" id="featured_image" accept="image/*" >
+      </div>
+    </div>
+  </div>
+  
+
   <div class="field featured_image_box">
     <label>Gallery</label>
-    <div class="ui small image">
-    <img src="./images/image1.png">
-    <input class="featured_image" type="file" name="gallery" id="gallery">
+    <div class="box_gallery">
+      <div id="galleryPreviewContainer" >
+        <img src="" alt="Gallery Image" id="galleryImage" style="display: none; height: 80px; max-width: 100%;" />
+      </div>
+      <div class="ui small image">
+        <input accept="image/*" type="file" name="gallery[]" id="gallery" accept="image/*" multiple>
+      </div>
     </div>
   </div>
+
   <div class="field featured_image_box">
   <label>Category</label>
   <select name="tags[]" multiple class="select_property">
