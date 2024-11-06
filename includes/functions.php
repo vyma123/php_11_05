@@ -66,8 +66,6 @@ function select_property($pdo, $type_){
     return $result;
 }
 
-
-
 function check_duplicate(object $pdo, string $type_, string $name_) {
     try {
         $query = "SELECT COUNT(*) FROM property WHERE type_ = :type_ AND name_ = :name_";
@@ -80,6 +78,48 @@ function check_duplicate(object $pdo, string $type_, string $name_) {
         return false;
     }
 }
+
+
+function getRecordCount($pdo, $searchTermLike, $category = null, $tag = null, $date_from = null, 
+                        $date_to = null, $price_from = null, $price_to = null) {
+    $query = "SELECT COUNT(DISTINCT products.id) FROM products";
+    $conditions = ["product_name LIKE :search_term"];
+    $params = [':search_term' => $searchTermLike];
+    
+    if ($category) {
+        $query .= " JOIN product_property pp1 ON products.id = pp1.product_id AND pp1.property_id = :category";
+        $params[':category'] = $category;
+    }
+    if ($tag) {
+        $query .= " JOIN product_property pp2 ON products.id = pp2.product_id AND pp2.property_id = :tag";
+        $params[':tag'] = $tag;
+    }
+
+    if ($date_from && $date_to) {
+        $conditions[] = "date BETWEEN :date_from AND :date_to";
+        $params[':date_from'] = $date_from;
+        $params[':date_to'] = $date_to;
+    }
+
+    if ($price_from && $price_to) {
+        $conditions[] = "price BETWEEN :price_from AND :price_to";
+        $params[':price_from'] = $price_from;
+        $params[':price_to'] = $price_to;
+    }
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $stmt = $pdo->prepare($query);
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+    }
+    $stmt->execute();
+    return $stmt->fetchColumn();
+}
+
+
 
 
 

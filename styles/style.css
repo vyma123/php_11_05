@@ -7,6 +7,8 @@
     box-sizing: border-box;
 }
 
+
+
 .container{
     padding: 2rem 2rem; 
     position: relative; 
@@ -43,9 +45,6 @@
 }
 
 /* start add product */
-.form_add_products{
-    padding: 2rem !important;
-}
 
 .form_add_products div label{
     font-size: 1rem !important;
@@ -67,6 +66,7 @@
     display: flex ;
     align-items: center;
     justify-content: space-around;
+    padding: 0 1rem !important;
 
 }
 
@@ -90,4 +90,8 @@
 
 .err_border{
     border: red 1px solid !important;
+}
+
+.pagination_box{
+    text-align: center;
 }

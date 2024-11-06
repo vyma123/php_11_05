@@ -1,4 +1,5 @@
 
+
 <div class="ui modal product_box">
   <div id="errMessage_add" class="ui negative message d-none">
     <div class="header">
@@ -19,98 +20,66 @@
   <div class="header">
   Price just allow numbers.  </div>
   </div>
-<form class="ui form form_add_products" id="saveProduct" enctype="multipart/form-data">
-  <div class="field">
-    <label>Product Name</label>
-    <input type="text" name="product_name" id="product_name" placeholder="Product Name">
-  </div>
-  <div class="field">
-    <label>SKU</label>
-    <input type="text" name="sku" id="sku" placeholder="SKU">
-  </div>
-  <div class="field">
-    <label>Price</label>
-    <input type="text" name="price" id="price" placeholder="Price">
-  </div>
-  <!-- <div class="field featured_image_box">
-    <label>Featured Image</label>
-    <div id="resultContainer" class="ui small image">
-    <img height="80" src="" id="uploadedImage">
-    <input accept="image/*" class="featured_image" type="file" name="featured_image" id="featured_image">
+  <!-- form -->
+  <form class="ui form form_add_products" class='editProduct' id="saveProduct" enctype="multipart/form-data">
+    <div class="field">
+      <label>Product Name</label>
+      <input type="text" name="product_name" id="product_name" placeholder="Product Name">
     </div>
-  </div>
- -->
-
-  <div class="field featured_image_box">
-    <label>Featured Image</label>
-    <div class="box_gallery">
-      <div id="resultContainer" >
-        <img src="" alt="featured Image" id="uploadedImage" style="display: none; height: 80px; max-width: 100%;" />
-      </div>
-      <div class="ui small image">
-        <input accept="image/*" type="file" name="featured_image" id="featured_image" accept="image/*" >
+    <div class="field">
+      <label>SKU</label>
+      <input type="text" name="sku" id="sku" placeholder="SKU">
+    </div>
+    <div class="field">
+      <label>Price</label>
+      <input type="text" name="price" id="price" placeholder="Price">
+    </div>
+    <div class="field featured_image_box">
+      <label>Featured Image</label>
+      <div class="box_gallery">
+        <div id="resultContainer">
+          <img src="" alt="featured Image" id="uploadedImage" style="height: 80px; max-width: 100%;" />
+        </div>
+        <div class="ui small image">
+          <input accept="image/*" type="file" name="featured_image" id="featured_image" accept="image/*">
+        </div>
       </div>
     </div>
-  </div>
-  
-
-  <div class="field featured_image_box">
-    <label>Gallery</label>
-    <div class="box_gallery">
-      <div id="galleryPreviewContainer" >
-        <img src="" alt="Gallery Image" id="galleryImage" style="display: none; height: 80px; max-width: 100%;" />
-      </div>
-      <div class="ui small image">
-        <input accept="image/*" type="file" name="gallery[]" id="gallery" accept="image/*" multiple>
+    <div class="field featured_image_box">
+      <label>Gallery</label>
+      <div class="box_gallery">
+        <div id="galleryPreviewContainer">
+          <img src="" alt="Gallery Image" id="galleryImage" style=" height: 80px; max-width: 100%;" />
+        </div>
+        <div class="ui small image">
+          <input accept="image/*" type="file" name="gallery[]" id="gallery" accept="image/*" multiple>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div id="load_property">
-  <div class="field featured_image_box">
-  <label>Category</label>
-  <select name="categories[]" multiple class="select_property">
-            <?php
-$selected_categories = isset($_POST['categories']) ? $_POST['categories'] : [];
-
-            
-            $type_ = 'category';
-            $categories = select_property($pdo, $type_);
-             if($categories) {
-                foreach ($categories as $category){
-                    $selected_category = in_array($category['id'], $selected_categories) && empty($productId) ? 'selected' : '';
-            ?>
-            <option value="<?= htmlspecialchars($category['id']) ?>" >
-                <?= htmlspecialchars($category['name_']) ?>
+    <div id="load_property">
+      <div class="field featured_image_box">
+        <label>Category</label>
+        <select id="categories_select" name="categories[]" multiple class="select_property">
+            <option value="0" >
+              category 1
             </option>
-            <?php }} ?>
-        </select>
-  </div>
-  <div class="field featured_image_box">
-  <label>Tag</label>
-  <select name="tags[]" multiple class="select_property">
-            <?php
-$selected_tags = isset($_POST['tags']) ? $_POST['tags'] : [];
-            
-            $type_ = 'tag';
-            $tags = select_property($pdo, $type_);
-             if($tags) {
-                foreach ($tags as $tag){
-                    $selected_tag = in_array($category['id'], $selected_tags) && empty($productId) ? 'selected' : '';
-            ?>
-            <option value="<?= htmlspecialchars($tag['id']) ?>" >
-                <?= htmlspecialchars($tag['name_']) ?>
-            </option>
-            <?php }} ?>
+      </select>
+      </div>
+      <div class="field featured_image_box">
+        <label>Tag</label>
+        <select id="tags_select" name="tags[]" multiple class="select_property">
+        <option value="0" >
+              tag 1
+          </option>
     </select>
-  </div>
-  </div>
+      </div>
+    </div>
 
-  <div class="box_button_add">
-      <button id="close_product" class="ui button" type="submit">Close</button>
+    <div class="box_button_add">
+      <button id="close_product" class="ui button" type="button">Close</button>
       <button class="ui button" type="submit">Submit</button>
     </div>
-</form>
+  </form>
 </div>
 
 

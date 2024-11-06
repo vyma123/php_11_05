@@ -1,6 +1,44 @@
 //start add product
 $(function(){
+	// Show the modal when the Add Product button is clicked
 	$("#add_product").click(function(){
+		$(".product_box").modal('show');
+		
+		// Clear the form fields
+		$('#saveProduct')[0].reset(); // Reset form fields
+
+		// Hide any previously shown messages
+		$('#errMessage_add').addClass('d-none');
+		$('#err_valid_Message_product').addClass('d-none');
+		$('#okMessage_product').addClass('d-none');
+		$('#err_valid_Message_price').addClass('d-none');
+
+		// Clear the image previews
+		$('#uploadedImage').hide();
+		$('#galleryImage').hide();
+
+		// Clear file input values (important for clearing file input)
+		$('#featured_image').val('');
+		$('#gallery').val('');
+	});
+
+	// Initialize the modal
+	$(".product_box").modal({
+		closable: true
+	});
+});
+
+$(function(){
+	$("#close_product").click(function(){
+		$(".product_box").modal('hide');
+	});
+	$(".product_box").modal({
+		closable: true
+	});
+});  
+
+$(function(){
+	$(".edit_button").click(function(){
 		$(".product_box").modal('show');
 	});
 	$(".product_box").modal({
@@ -54,12 +92,60 @@ $('#gallery').on('change', function() {
 });
 
 
+document.getElementById('add_product').addEventListener('click', function() {
+    // Open the modal
+    $('.ui.modal.product_box').modal('show');
+
+    // Fetch categories and tags via AJAX
+    fetch('handler_product.php')
+        .then(response => response.json())
+        .then(data => {
+            const categoriesSelect = document.getElementById('categories_select');
+            const tagsSelect = document.getElementById('tags_select');
+
+            // Clear existing options
+            categoriesSelect.innerHTML = '';
+            tagsSelect.innerHTML = '';
+
+            // Populate categories
+            data.categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name_;
+                categoriesSelect.appendChild(option);
+            });
+
+            // Populate tags
+            data.tags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag.id;
+                option.textContent = tag.name_;
+                tagsSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching categories and tags:', error));
+});
+
 
 $(document).on('submit', '#saveProduct', function(e){
 	e.preventDefault();
 
 	var formData = new FormData(this);
 	formData.append("save_product", true);
+
+	var categories = [];
+    var tags = [];
+
+    $("select[name='categories[]']").each(function() {
+      categories.push($(this).val());
+    });
+
+    $("select[name='tags[]']").each(function() {
+      tags.push($(this).val());
+    });
+
+    formData.append('categories', JSON.stringify(categories));
+    formData.append('tags', JSON.stringify(tags));
 
 	$.ajax({
 		type: "POST",
@@ -130,6 +216,8 @@ $(document).on('submit', '#saveProduct', function(e){
 				$('#featured_image').val(''); 
 				$('#galleryPreviewContainer').empty();
                 $('#saveProduct')[0].reset();
+				$('#tableID').load(location.href + " #tableID");
+
 
                 setTimeout(function() {
                     $('#okMessage_product').fadeOut(400, function() {
@@ -140,7 +228,65 @@ $(document).on('submit', '#saveProduct', function(e){
 		}
 	});
 })
+
+
 //end add product
+
+
+$(document).on('click', '.edit_button', function(e) {
+    e.preventDefault();
+
+    var product_id = $(this).val();
+
+    $.ajax({
+        type: "GET",
+        url: "handler_product.php?product_id=" + product_id,
+        data: "",
+        dataType: "json",  // Set the dataType to json to parse the response automatically
+        success: function(response) {
+            if(response.status == 422){
+                alert(response.message);
+            } else if(response.status == 200){
+                // Populate product details
+                $('#product_id').val(response.data.product_id);
+                $('#product_name').val(response.data.product_name);
+                $('#sku').val(response.data.sku);
+                $('#price').val(response.data.price);
+
+                // Display the featured image
+                $('#uploadedImage').attr('src', './uploads/' + response.data.featured_image); // Replace 'path_to_images/' with the correct path
+
+                // Clear existing gallery previews
+                $('#galleryPreviewContainer').empty();
+
+                // Display gallery images
+                $.each(response.data.gallery, function(index, image) {
+                    var imgElement = $('<img>').attr('src', './uploads/' + image) // Replace 'path_to_images/' with the correct path
+                                              .attr('alt', 'Gallery Image')
+                                              .css('height', '80px')  
+                    $('#galleryPreviewContainer').append(imgElement);
+                });
+
+				$.each(response.data.categories, function(index, categoryId) {
+                    $('#categories_select option[value="' + categoryId + '"]').prop('selected', true);
+                });
+                
+                // Lặp qua danh sách tags và đánh dấu các option có id tương ứng
+                $.each(response.data.tags, function(index, tagId) {
+                    $('#tags_select option[value="' + tagId + '"]').prop('selected', true);
+                });
+            }
+        }
+    });
+});
+
+
+$("#close_product").click(function() {
+	$(".product_box").modal('hide');
+});
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //start add property
