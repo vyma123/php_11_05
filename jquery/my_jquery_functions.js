@@ -1,28 +1,23 @@
-//start add product
+
 $(function(){
-	// Show the modal when the Add Product button is clicked
 	$("#add_product").click(function(){
 		$(".product_box").modal('show');
 		
-		// Clear the form fields
-		$('#saveProduct')[0].reset(); // Reset form fields
+		$('#saveProduct')[0].reset(); 
 
-		// Hide any previously shown messages
+
 		$('#errMessage_add').addClass('d-none');
 		$('#err_valid_Message_product').addClass('d-none');
 		$('#okMessage_product').addClass('d-none');
 		$('#err_valid_Message_price').addClass('d-none');
 
-		// Clear the image previews
 		$('#uploadedImage').hide();
-		$('#galleryImage').hide();
+		$('#galleryPreviewContainer').hide();
 
-		// Clear file input values (important for clearing file input)
 		$('#featured_image').val('');
 		$('#gallery').val('');
 	});
 
-	// Initialize the modal
 	$(".product_box").modal({
 		closable: true
 	});
@@ -37,14 +32,15 @@ $(function(){
 	});
 });  
 
-$(function(){
-	$(".edit_button").click(function(){
-		$(".product_box").modal('show');
-	});
-	$(".product_box").modal({
-		closable: true
-	});
-}); 
+// $(function(){
+// 	$(".edit_button").click(function(){
+// 		$(".product_box").modal('show');
+// 	});
+// 	$(".product_box").modal({
+// 		closable: true
+// 	});
+// }); 
+
 $(function(){
 	$("#close_product").click(function(){
 		$(".product_box").modal('hide');
@@ -55,46 +51,64 @@ $(function(){
 });  
 
 $('#featured_image').on('change', function() {
-	// Check if a file has been selected
 	if (this.files && this.files[0]) {
-		var reader = new FileReader(); // Create a FileReader to read the file
+		var reader = new FileReader(); 
 		reader.onload = function(e) {
-			$('#uploadedImage').attr('src', e.target.result).show(); // Set the src to the file's data URL and show the image
+			$('#uploadedImage').attr('src', e.target.result).show(); 
 		};
-		reader.readAsDataURL(this.files[0]); // Read the selected file as a data URL
+		reader.readAsDataURL(this.files[0]); 
 	}
 });
-
 
 $('#gallery').on('change', function() {
-	// Clear previous images in the gallery preview container
-	$('#galleryPreviewContainer').empty();
-	
-	// Loop through each selected file
-	if (this.files) {
-		for (let i = 0; i < this.files.length; i++) {
-			let file = this.files[i];
-			let reader = new FileReader();
-			
-			reader.onload = function(e) {
-				// Create a new img element for each gallery image
-				const img = $('<img>', {
-					src: e.target.result,
-					alt: 'Gallery Image',
-					style: 'height: 80px;'
-				});
-				// Append the new img element to the gallery preview container
-				$('#galleryPreviewContainer').append(img);
-			};
-			reader.readAsDataURL(file); // Read each file
-		}
-	}
+    $('#galleryPreviewContainer').empty();
+    
+    if (this.files) {
+        for (let i = 0; i < this.files.length; i++) {
+            let file = this.files[i];
+            let reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = $('<img>', {
+                    src: e.target.result,
+                    alt: 'Gallery Image',
+                    style: 'height: 80px;'
+                });
+                $('#galleryPreviewContainer').append(img);
+                $('#galleryPreviewContainer').show();
+            };
+            reader.readAsDataURL(file); 
+        }
+    }
 });
 
+
+// $('#gallery').on('change', function() {
+// 	$('#galleryPreviewContainer').empty();
+	
+// 	if (this.files) {
+// 		for (let i = 0; i < this.files.length; i++) {
+// 			let file = this.files[i];
+// 			let reader = new FileReader();
+			
+// 			reader.onload = function(e) {
+// 				const img = $('<img>', {
+// 					src: e.target.result,
+// 					alt: 'Gallery Image',
+// 					style: 'height: 80px;'
+// 				});
+// 				$('#galleryPreviewContainer').append(img);
+// 				$('#galleryPreviewContainer').show();
+// 			};
+// 			reader.readAsDataURL(file); 
+// 		}
+// 	}
+// });
 
 document.getElementById('add_product').addEventListener('click', function() {
     // Open the modal
     $('.ui.modal.product_box').modal('show');
+
 
     // Fetch categories and tags via AJAX
     fetch('handler_product.php')
@@ -126,12 +140,12 @@ document.getElementById('add_product').addEventListener('click', function() {
         .catch(error => console.error('Error fetching categories and tags:', error));
 });
 
-
 $(document).on('submit', '#saveProduct', function(e){
 	e.preventDefault();
 
 	var formData = new FormData(this);
 	formData.append("save_product", true);
+	
 
 	var categories = [];
     var tags = [];
@@ -164,8 +178,6 @@ $(document).on('submit', '#saveProduct', function(e){
 			$('#product_name').removeClass('err_border'); 
             $('#sku').removeClass('err_border');
             $('#price').removeClass('err_border');
-			
-
 
             if (res.status == 422) {
 				$('#errMessage_add').removeClass('d-none').fadeIn(400); 
@@ -175,10 +187,7 @@ $(document).on('submit', '#saveProduct', function(e){
                     });
                 }, 3500);
 
-
-
             }else if (res.status == 400) {
-
 				
 				setTimeout(function() {
 					$('#err_valid_Message_product').fadeOut(400, function() {
@@ -218,13 +227,154 @@ $(document).on('submit', '#saveProduct', function(e){
                 $('#saveProduct')[0].reset();
 				$('#tableID').load(location.href + " #tableID");
 
+                setTimeout(function() {
+                    $('#okMessage_product').fadeOut(400, function() {
+                        $(this).addClass('d-none');
+                    });
+                }, 3500);
+
+            }
+			else if(res.statusedit == 200){
+				$('#sku').addClass('err_border');
+
+
+			}
+
+		}
+	});
+})
+
+$(document).on('submit', '#saveProduct', function(e){
+	e.preventDefault();
+
+	var formData = new FormData(this);
+	formData.append("save_product", true);
+
+	var editId = $('.edit_button').val();
+    if(editId) {
+        formData.append('id', editId);
+    }
+	console.log('HE'+	editId);
+
+	var featuredImageSrc = $('#uploadedImage').attr('src'); 
+    if (featuredImageSrc) {
+        formData.append('featured_image_src', featuredImageSrc);
+    }
+
+	var galleryImagesSrc = [];
+    $('#galleryPreviewContainer img').each(function() {
+        galleryImagesSrc.push($(this).attr('src'));
+    });
+    if (galleryImagesSrc.length > 0) {
+        formData.append('gallery_images_src', JSON.stringify(galleryImagesSrc));
+    }
+
+
+	
+	
+
+	
+
+	var categories = [];
+    var tags = [];
+
+    $("select[name='categories[]']").each(function() {
+      categories.push($(this).val());
+    });
+
+    $("select[name='tags[]']").each(function() {
+      tags.push($(this).val());
+    });
+
+    formData.append('categories', JSON.stringify(categories));
+    formData.append('tags', JSON.stringify(tags));
+
+	$.ajax({
+		type: "POST",
+		url: "handler_product.php",
+		data: formData,
+		dataType: "",
+		processData:false,
+		contentType:false,
+		success: function(response) {
+            var res = jQuery.parseJSON(response);
+
+			console.log(res);
+			
+			$('#okMessage').addClass('d-none'); 
+			$('#okMessage_add').addClass('d-none'); 
+            $('#errMessage').addClass('d-none'); 
+            $('#err_valid_Message').addClass('d-none'); 
+            $('#err_valid_Message_product').addClass('d-none'); 
+			$('#product_name').removeClass('err_border'); 
+            $('#sku').removeClass('err_border');
+            $('#price').removeClass('err_border');
+
+            if (res.status == 422) {
+				$('#errMessage_add').removeClass('d-none').fadeIn(400); 
+                setTimeout(function() {
+                    $('#errMessage_add').fadeOut(400, function() {
+                        $(this).addClass('d-none');
+                    });
+                }, 3500);
+
+            }else if (res.status == 400) {
+				
+				setTimeout(function() {
+					$('#err_valid_Message_product').fadeOut(400, function() {
+						$(this).addClass('d-none');
+					});
+				}, 3500);
+				setTimeout(function() {
+					$('#err_valid_Message_price').fadeOut(400, function() {
+						$(this).addClass('d-none');
+					});
+				}, 3500);
+				res.errors.forEach(function(error) {
+
+				if (error.field === 'product_name') {
+					$('#err_valid_Message_product').removeClass('d-none').fadeIn(400);
+					$('#product_name').addClass('err_border');
+				} 
+				if (error.field === 'sku') {
+					$('#err_valid_Message_product').removeClass('d-none').fadeIn(400);
+					$('#sku').addClass('err_border');
+				}
+				if (error.field === 'price') {
+					$('#err_valid_Message_price').removeClass('d-none').fadeIn(400);
+					$('#price').addClass('err_border');
+				}
+				if (error.field === 'featured_image') {
+					$('#err_valid_Message_product').removeClass('d-none').fadeIn(400);
+					$('#featured_image').addClass('err_border');
+				}
+			});
+			}
+			else if (res.status == 200) {
+				if(res.action == 'add'){
+					console.log("Product added:", res.message);
+
+				$('#okMessage_product').removeClass('d-none').fadeIn(400); 
+				$('#uploadedImage').attr('src', '').hide();
+				$('#featured_image').val(''); 
+				$('#galleryPreviewContainer').empty();
+                $('#saveProduct')[0].reset();
+				$('#tableID').load(location.href + " #tableID");
 
                 setTimeout(function() {
                     $('#okMessage_product').fadeOut(400, function() {
                         $(this).addClass('d-none');
                     });
                 }, 3500);
+			}else if(res.action == 'edit'){
+				console.log("Product updated:", res.message);
+				$('#sku').addClass('err_border');
+			}
+
             }
+			
+			
+
 		}
 	});
 })
@@ -232,49 +382,95 @@ $(document).on('submit', '#saveProduct', function(e){
 
 //end add product
 
-
 $(document).on('click', '.edit_button', function(e) {
     e.preventDefault();
 
     var product_id = $(this).val();
+    console.log(product_id);
+	
+	$('.ui.button[type="submit"]:contains("Add")').addClass('d-none'); 
+    $('.ui.button[type="submit"]:contains("Update")').removeClass('d-none'); 
 
     $.ajax({
         type: "GET",
         url: "handler_product.php?product_id=" + product_id,
-        data: "",
-        dataType: "json",  // Set the dataType to json to parse the response automatically
-        success: function(response) {
-            if(response.status == 422){
-                alert(response.message);
-            } else if(response.status == 200){
+        dataType: "json", 
+        success: function(res) {
+			$('.ui.modal.product_box').modal('show');
+
+            if(res.status == 422){
+                alert(res.message);
+				
+            } else if(res.status == 200){				
+
                 // Populate product details
-                $('#product_id').val(response.data.product_id);
-                $('#product_name').val(response.data.product_name);
-                $('#sku').val(response.data.sku);
-                $('#price').val(response.data.price);
+                $('#product_id').val(res.data.id);
+                $('#product_name').val(res.data.product_name);
+                $('#sku').val(res.data.sku);
+                $('#price').val(res.data.price);
 
-                // Display the featured image
-                $('#uploadedImage').attr('src', './uploads/' + response.data.featured_image); // Replace 'path_to_images/' with the correct path
 
-                // Clear existing gallery previews
+				$('#uploadedImage').show();
+				$('#okMessage_product').hide();
+				$('#galleryPreviewContainer').show();
+				
+                $('#uploadedImage').attr('src', './uploads/' + res.data.featured_image); 
+			
                 $('#galleryPreviewContainer').empty();
 
-                // Display gallery images
-                $.each(response.data.gallery, function(index, image) {
-                    var imgElement = $('<img>').attr('src', './uploads/' + image) // Replace 'path_to_images/' with the correct path
-                                              .attr('alt', 'Gallery Image')
-                                              .css('height', '80px')  
-                    $('#galleryPreviewContainer').append(imgElement);
-                });
+				$.each(res.gallery, function(index, image) {
+					var imagePath = './uploads/' + image.name_;  
+				
+				
+					var imgElement = $('<img>')
+						.attr('src', imagePath)
+						.attr('alt', 'Gallery Image')
+						.css('height', '80px');  
+				
+					$('#galleryPreviewContainer').append(imgElement);
+				});
+				
+				$('#categories_select').empty();
 
-				$.each(response.data.categories, function(index, categoryId) {
-                    $('#categories_select option[value="' + categoryId + '"]').prop('selected', true);
-                });
-                
-                // Lặp qua danh sách tags và đánh dấu các option có id tương ứng
-                $.each(response.data.tags, function(index, tagId) {
-                    $('#tags_select option[value="' + tagId + '"]').prop('selected', true);
-                });
+
+				$.each(res.categories, function(index, category) {
+					var option = $('<option></option>')
+						.attr('value', category.id)  
+						.text(category.name_);  
+				 
+						console.log(category.name_);
+						
+					$('#categories_select').append(option);
+					
+						$.each(res.categoriesse, function(i, selectedCategory) {
+							if (selectedCategory.name_ === category.name_) {
+								$('#categories_select option[value="' + category.id + '"]').prop('selected', true);
+							}
+						});
+				});
+				
+				$('#tags_select').empty();
+				
+
+				$.each(res.tags, function(index, tag) {
+					var option = $('<option></option>')
+						.attr('value', tag.id)  
+						.text(tag.name_);  
+				
+					$('#tags_select').append(option);
+				
+					$.each(res.tagsse, function(i, selectedTag) {
+						if (selectedTag.name_ === tag.name_) {
+							$('#tags_select option[value="' + tag.id + '"]').prop('selected', true);
+						}
+					});
+				});
+
+				
+
+
+
+
             }
         }
     });

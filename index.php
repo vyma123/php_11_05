@@ -17,16 +17,33 @@ require_once './includes/functions.php';
     display: flex ;
     align-items: center;
     justify-content: space-between;
+    height: 80px !important;
     }
+
+    body::-webkit-scrollbar {
+    display: none;
+
+    }
+    #galleryPreviewContainer {
+    overflow-x: auto; /* Enables horizontal scroll */
+    white-space: nowrap; /* Prevents images from wrapping to the next line */
+}
+
+#galleryPreviewContainer img {
+    height: 80px;
+    width: 100%; /* Ensures image scaling within the div */
+    display: inline-block; /* Aligns images side by side */
+}
 
     .form_add_products{
         padding: 1rem;
     }
 
-   
-        body::-webkit-scrollbar {
-    display: none;
-}
+
+
+
+
+
 
    </style>
     <!-- link semantic ui -->
@@ -161,8 +178,7 @@ require_once './includes/functions.php';
             $stmt->execute();
             $galleryImages = $stmt->fetchAll(PDO::FETCH_ASSOC);
             foreach ($galleryImages as $image) {?> 
-
-        <img height="40" src="./uploads/<?= $image['name_'] ?>">
+        <img  height="40" src="./uploads/<?= $image['name_'] ?>">
       <?php }?>
       </td>
       <td>
@@ -202,6 +218,8 @@ require_once './includes/functions.php';
             <?php }?>
       </td>
       <td>
+      <input type="hidden" name="id" id="id">
+
         <button type="submit" value="<?= $row['id']?>" class="edit_button" >
         <i class="edit icon"></i>
         <p><?php echo $row['id']?></p>
