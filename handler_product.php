@@ -3,6 +3,8 @@ require_once 'includes/db.inc.php';
 require_once './includes/functions.php';
 
 
+
+
 $categoryQuery = "SELECT id, name_ FROM property WHERE type_ = 'category'";
 $categoryStmt = $pdo->prepare($categoryQuery);
 $categoryStmt->execute();
@@ -407,6 +409,8 @@ if (isset($_GET['product_id'])) {
     
     echo json_encode($res);
 }
+
+
 
 
 

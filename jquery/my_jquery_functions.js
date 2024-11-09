@@ -491,3 +491,65 @@ $(document).on('submit', '#saveProperty', function(e){
 //end add property
 
 
+//pagination
+$(document).ready(function() {
+    $('.ui.pagination.menu').on('click', 'a.item', function(e) {
+        e.preventDefault(); 
+
+        var page = $(this).attr('href').split('=')[1]; 
+        loadPage(page); 
+    });
+
+    function loadPage(page) {
+        $.ajax({
+            url: 'index.php', 
+            type: 'GET',
+            data: { page: page }, 
+            success: function(response) {
+                $('#tableID tbody').html($(response).find('#tableID tbody').html());
+                $('.ui.pagination.menu').html($(response).find('.ui.pagination.menu').html());
+            }
+        });
+    }
+});
+
+function applyFilters(event) {
+	event.preventDefault();
+	
+	// Gather filter values
+	const search = document.getElementById("search").value;
+	const sortBy = document.getElementById("sort_by").value;
+	const order = document.getElementById("order").value;
+	const category = document.getElementById("category").value;
+	const tag = document.getElementById("tag").value;
+	const dateFrom = document.getElementById("date_from").value;
+	const dateTo = document.getElementById("date_to").value;
+	const priceFrom = document.getElementById("price_from").value;
+	const priceTo = document.getElementById("price_to").value;
+	const gallery = document.getElementById("gallery").value;  // Added gallery parameter
+	
+	// AJAX request
+	$.ajax({
+	  url: 'filter_products.php', // URL of the PHP script
+	  type: 'GET',
+	  data: {
+		search: search,
+		sort_by: sortBy,
+		order: order,
+		category: category,
+		tag: tag,
+		date_from: dateFrom,
+		date_to: dateTo,
+		price_from: priceFrom,
+		price_to: priceTo,
+		gallery: gallery  // Send gallery filter data
+	  },
+	  success: function(response) {
+		$('#productTableBody').html(response); // Update the table body with the response
+	  },
+	  error: function(error) {
+		console.error("Error loading data:", error);
+	  }
+	});
+  }
+  

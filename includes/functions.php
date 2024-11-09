@@ -162,7 +162,15 @@ function getRecordCount($pdo, $searchTermLike, $category = null, $tag = null, $d
     return $stmt->fetchColumn();
 }
 
-
+function select_all_products(object $pdo)  {
+    $query = "SELECT * FROM products";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $pdo=null;
+    $stmt=null;
+    return $results;
+}
 
 
 

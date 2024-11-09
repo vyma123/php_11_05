@@ -2,6 +2,22 @@
 require_once 'includes/db.inc.php';
 require_once './includes/functions.php';
 
+$results = select_all_products($pdo);
+
+$searchTerm = isset($_GET['search']) ? test_input($_GET['search']) : '';
+$per_page_record = 5;
+$page = isset($_GET["page"]) ? $_GET["page"] : 1;
+$page = filter_var($page, FILTER_VALIDATE_INT) !== false ? (int)$page : 1;
+
+$start_from = ($page - 1) * $per_page_record;
+
+// Fetching products with pagination
+$query = "SELECT * FROM products LIMIT :start_from, :per_page";
+$stmt = $pdo->prepare($query);
+$stmt->bindParam(':start_from', $start_from, PDO::PARAM_INT);
+$stmt->bindParam(':per_page', $per_page_record, PDO::PARAM_INT);
+$stmt->execute();
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
@@ -81,6 +97,10 @@ table thead .date{
     text-align: center;
 }
 
+.select_tag{
+    width: 100px;
+}
+
 
 
 
@@ -103,65 +123,64 @@ table thead .date{
 
     <section class="container">
         <h1>PHP1</h1>
-
         <div class="product_header">
             <div class="product_header_top">
                 <div>
-                    <button id="add_product" class="ui primary button">
-                        Add product
-                    </button>
-                    <button id="add_property" class="ui button">
-                        Add property
-                    </button>
-                    <a href="#" class="ui button">
-                        Sync online
-                    </a>
+                    <button id="add_product" class="ui primary button">Add product</button>
+                    <button id="add_property" class="ui button">Add property</button>
+                    <a href="#" class="ui button">Sync online</a>
                 </div>
                 <div class="ui icon input">
-                    <input name="search" type="text" placeholder="Search product..."  value="">
-                    <i class="inverted circular search link icon" ></i>
+                    <input id="search" type="text" placeholder="Search product..." value="">
+                    <i class="inverted circular search link icon"></i>
                 </div>
             </div>
             <div class="product_header_bottom">
-                <select class="ui dropdown" name="sort_by" id="sort_by">
+                <select class="ui dropdown" id="sort_by">
                     <option value="date">Date</option>
                     <option value="product_name">Product name</option>
                     <option value="price">Price</option>
                 </select>
-                <select class="ui dropdown" name="order">
+                <select class="ui dropdown" id="order">
                     <option value="ASC">ASC</option>
                     <option value="DESC">DESC</option>
                 </select>
-
-                <select class="ui dropdown" name="category">
-                   <option value="0">Category</option>
-                   <option value="1">category 1</option>
+                <select class="ui dropdown" id="category">
+                    <option value="0">Category</option>
+                    <?php
+                    $query = "SELECT p.id, p.name_ FROM property p WHERE p.type_ = 'category'";
+                    $stmt = $pdo->prepare($query);
+                    $stmt->execute();
+                    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $selectedCategory = $_GET['category'] ?? 0;
+                    foreach ($categories as $category) {
+                        $selected = ($category['id'] == $selectedCategory) ? 'selected' : '';
+                        echo "<option $selected value=\"{$category['id']}\">" . htmlspecialchars($category['name_']) . "</option>";
+                    }
+                    ?>
                 </select>
-
-                <select class="ui dropdown" name="tag">
+                <select class="ui dropdown select_tag" id="tag">
                     <option value="0">Select Tag</option>
-                    <option value="1">tag 1</option>
-                
+                    <?php
+                    $query = "SELECT p.id, p.name_ FROM property p WHERE p.type_ = 'tag'";
+                    $stmt = $pdo->prepare($query);
+                    $stmt->execute();
+                    $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    $selectedTag = $_GET['tag'] ?? 0;
+                    foreach ($tags as $tag) {
+                        $selected = ($tag['id'] == $selectedTag) ? 'selected' : '';
+                        echo "<option $selected value=\"{$tag['id']}\">" . htmlspecialchars($tag['name_']) . "</option>";
+                    }
+                    ?>
                 </select>
-                <div class="ui input">
-                    <input type="date" value="" id="date_from" name="date_from">
-                </div>
-                <div class="ui input">
-                    <input type="date" value="" id="date_to" name="date_to">
-                </div>
-                <div class="ui input">
-                    <input type="text" value="" id="price_from" name="price_from" placeholder="price from"
-                    >
-                </div>
-                <div class="ui input">
-                    <input type="text" value="" id="price_to" name="price_to" placeholder="price to">
-                </div>
-                <button type="submit" class="ui button">
-                    Filter
-                </button>
+                <div class="ui input"><input type="date" id="date_from"></div>
+                <div class="ui input"><input type="date" id="date_to"></div>
+                <div class="ui input"><input type="text" id="price_from" placeholder="price from"></div>
+                <div class="ui input"><input type="text" id="price_to" placeholder="price to"></div>
+                <button onclick="applyFilters(event)" class="ui button">Filter</button>
             </div>
         </div>
-
+     
         <!-- table -->
          <div class="box_table">
 
@@ -179,22 +198,16 @@ table thead .date{
       <th>Action</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id="productTableBody">
   <?php 
-        $per_page_record = 5;
         if (isset($_GET["page"])) {    
             $page  = $_GET["page"];    
         } else {    
             $page=1;    
           }    
-          $start_from = ($page-1) * $per_page_record;     
-          $query = "SELECT * FROM products LIMIT $start_from, $per_page_record";     
-          $stmt = $pdo->prepare($query);
-          $stmt->execute();
-          $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-         if (count($results) > 0) {
-
+        
+          
+          if (count($results) > 0) {
             foreach ($results as $row){
               $product_id = $row['id']; ?>
     
@@ -277,18 +290,19 @@ table thead .date{
   </tbody>
 </table>
 </div>
+
+
 <div class="pagination_box">    
 <div class="ui pagination menu">
 
       <?php  
-                echo "</br>";
+        echo "</br>";
         $query = "SELECT COUNT(*) FROM products"; 
         $count_stmt = $pdo->prepare($query);
         $count_stmt->execute();   
         $total_records = $count_stmt->fetchColumn();
           
     echo "</br>";     
-        // Number of pages required.   
         $total_pages = ceil($total_records / $per_page_record);  
 
         $pagLink = "";       
@@ -317,7 +331,6 @@ table thead .date{
         }   else {
             echo "<a class='item disabled'> Next </a>"; 
         }
-  
       ?>    
       </div>  
       </div>  
