@@ -1,6 +1,11 @@
 <?php
 require_once 'includes/db.inc.php';
 require_once './includes/functions.php';
+
+
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +36,6 @@ require_once './includes/functions.php';
 
 #galleryPreviewContainer img {
     height: 80px;
-    width: 100%; /* Ensures image scaling within the div */
     display: inline-block; /* Aligns images side by side */
 }
 
@@ -39,8 +43,43 @@ require_once './includes/functions.php';
         padding: 1rem;
     }
 
+    .img_box{
+        overflow: hidden;
+        width: 500px;
+    }
 
+    .edit_button {
+    border: none;
+    cursor: pointer;
+    border-radius: 5px; /* Optional: rounded corners */
+    background-color: #fff;
+}
 
+.box_button_add{
+    margin-top: 1rem;
+}
+
+#editProductButton{
+}
+
+#addProductButton{
+}
+
+.tag_name{
+    width: 190px;
+}
+
+.prd_name{
+    width: 206px;
+}
+
+table thead .date{
+    width: 100px;
+}
+
+#tableID{
+    text-align: center;
+}
 
 
 
@@ -129,8 +168,8 @@ require_once './includes/functions.php';
     <table id="tableID" class="ui compact celled table">
   <thead>
     <tr>
-      <th>Date</th>
-      <th>Product name</th>
+      <th class="date">Date</th>
+      <th class="prd_name">Product name</th>
       <th>SKU</th>
       <th>Price</th>
       <th>Feature Image</th>
@@ -218,11 +257,11 @@ require_once './includes/functions.php';
             <?php }?>
       </td>
       <td>
-      <input type="hidden" name="id" id="id">
+      <input  type="hidden" name="id" id="id">
 
-        <button type="submit" value="<?= $row['id']?>" class="edit_button" >
+
+        <button type="submit"  value="<?= $row['id']?>" class="edit_button" >
         <i class="edit icon"></i>
-        <p><?php echo $row['id']?></p>
         </button>
       
         <a  class="delete_button" href="">

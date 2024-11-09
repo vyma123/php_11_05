@@ -15,15 +15,17 @@
     Added successfully.
     </div>
   </div>
-  
+  <div id="okMessage_product_update" class="ui success message d-none">
+    <div class="header">
+    Update successfully.
+    </div>
+  </div>
   <div id="err_valid_Message_price" class="ui negative message d-none">
   <div class="header">
   Price just allow numbers.  </div>
   </div>
   <!-- form -->
   <form class="ui form form_add_products" class='editProduct' id="saveProduct" enctype="multipart/form-data">
-    
-  <input type="hidden" name="edit_id" id="edit_id" value="">
 
     <div class="field">
       <label>Product Name</label>
@@ -51,7 +53,7 @@
     <div class="field featured_image_box">
       <label>Gallery</label>
       <div class="box_gallery">
-        <div>
+        <div class="img_box">
         <div id="galleryPreviewContainer">
             <img src="" alt="Gallery Image" id="galleryImage" style=" height: 80px; max-width: 100%;" />
           </div>
@@ -74,10 +76,15 @@
     </select>
       </div>
     </div>
+    <input type="hidden" id="product_id" name="product_id" value="">
+    <input type="hidden" id="action_type" name="action_type" value="">
 
     <div class="box_button_add">
       <button id="close_product" class="ui button" type="button">Close</button>
-      <button id="addProductButton"  class="ui button d-none" type="submit">Submit</button>
+
+      <button id="addProductButton" class="ui button d-none" type="submit">Add</button>
+   
+     <button id="editProductButton" class="ui button d-none" type="submit">Edit</button>
 
     </div>
   </form>

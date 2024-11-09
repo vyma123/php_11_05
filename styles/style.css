@@ -95,3 +95,12 @@
 .pagination_box{
     text-align: center;
 }
+
+
+.edit_button i {
+    margin: 0 !important;
+    height: 0 !important;
+    color: #4847479d;
+}
+
+

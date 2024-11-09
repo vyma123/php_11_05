@@ -28,6 +28,49 @@ function insert_product(object $pdo, string $product_name, string $sku, string $
         return $pdo->lastInsertId();
 }
 
+function update_product(object $pdo, int $product_id, string $product_name, string $sku, string $price, string $featured_image){
+    $data = [
+        'product_id' => $product_id,
+        'product_name' => $product_name, 
+        'sku' => $sku, 
+        'price' => $price, 
+        'featured_image' => $featured_image, 
+    ];
+    
+    // Update query
+    $query = "UPDATE products 
+              SET product_name = :product_name, 
+                  sku = :sku, 
+                  price = :price, 
+                  featured_image = :featured_image 
+              WHERE id = :product_id";
+    
+    // Prepare and execute the query
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(":product_name", $product_name);
+    $stmt->bindParam(":sku", $sku);
+    $stmt->bindParam(":price", $price);
+    $stmt->bindParam(":featured_image", $featured_image);
+    $stmt->bindParam(":product_id", $product_id);
+    $stmt->execute($data);
+
+    return $stmt->rowCount(); // Returns the number of rows affected (should be 1 if updated successfully)
+}
+
+function select_featuredimage($pdo, $product_id){
+    $query = "SELECT featured_image FROM products WHERE id = :product_id;";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(":product_id", $product_id);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch a single row instead of all
+    return $result['featured_image']; // Return the 'featured_image' column as a string
+}
+
+
+
+
+
+
 function add_product_property(PDO $pdo, int $product_id, int $property_id) {
     $query = "INSERT INTO product_property (product_id, property_id) VALUES (:product_id, :property_id);";
     $stmt = $pdo->prepare($query);
