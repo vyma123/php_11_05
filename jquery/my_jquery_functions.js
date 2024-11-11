@@ -223,15 +223,7 @@ $(document).on('submit', '#saveProduct', function(e){
             $('#sku').removeClass('err_border');
             $('#price').removeClass('err_border');
 
-            if (res.status == 422) {
-				$('#errMessage_add').removeClass('d-none').fadeIn(400); 
-                setTimeout(function() {
-                    $('#errMessage_add').fadeOut(400, function() {
-                        $(this).addClass('d-none');
-                    });
-                }, 3500);
-
-            }else if (res.status == 400) {
+            if (res.status == 400) {
 				
 				setTimeout(function() {
 					$('#err_valid_Message_product').fadeOut(400, function() {
@@ -242,9 +234,29 @@ $(document).on('submit', '#saveProduct', function(e){
 					$('#err_valid_Message_price').fadeOut(400, function() {
 						$(this).addClass('d-none');
 					});
-				}, 3500);
+				}, 2500);
+			
+				
+				
 				res.errors.forEach(function(error) {
 
+				if (error.field === 'empty') {
+					$('#errMessage_add').removeClass('d-none').fadeIn(400); 
+					setTimeout(function() {
+						$('#errMessage_add').fadeOut(400, function() {
+							$(this).addClass('d-none');
+						});
+					}, 2500);
+				}
+				if (error.field === 'empty') {
+					$('#err_valid_Message_sku').removeClass('d-none').fadeIn(400); 
+				setTimeout(function() {
+					$('#err_valid_Message_sku').fadeOut(400, function() {
+						$(this).removeClass('d-none');
+					});
+				}, 2500);
+			}
+	
 				if (error.field === 'product_name') {
 					$('#err_valid_Message_product').removeClass('d-none').fadeIn(400);
 					$('#product_name').addClass('err_border');
@@ -261,7 +273,13 @@ $(document).on('submit', '#saveProduct', function(e){
 					$('#err_valid_Message_product').removeClass('d-none').fadeIn(400);
 					$('#featured_image').addClass('err_border');
 				}
+				if (error.field === 'exist') {
+					$('#err_valid_Message_sku').removeClass('d-none').fadeIn(400);
+					$('#sku').addClass('err_border');
+				}
+				
 			});
+			
 			}
 			else if (res.status == 200) {
 				if(res.action == 'add'){
@@ -492,31 +510,11 @@ $(document).on('submit', '#saveProperty', function(e){
 
 
 //pagination
-$(document).ready(function() {
-    $('.ui.pagination.menu').on('click', 'a.item', function(e) {
-        e.preventDefault(); 
 
-        var page = $(this).attr('href').split('=')[1]; 
-        loadPage(page); 
-    });
-
-    function loadPage(page) {
-        $.ajax({
-            url: 'index.php', 
-            type: 'GET',
-            data: { page: page }, 
-            success: function(response) {
-                $('#tableID tbody').html($(response).find('#tableID tbody').html());
-                $('.ui.pagination.menu').html($(response).find('.ui.pagination.menu').html());
-            }
-        });
-    }
-});
-
+//filter_search
 function applyFilters(event) {
 	event.preventDefault();
 	
-	// Gather filter values
 	const search = document.getElementById("search").value;
 	const sortBy = document.getElementById("sort_by").value;
 	const order = document.getElementById("order").value;
@@ -526,11 +524,10 @@ function applyFilters(event) {
 	const dateTo = document.getElementById("date_to").value;
 	const priceFrom = document.getElementById("price_from").value;
 	const priceTo = document.getElementById("price_to").value;
-	const gallery = document.getElementById("gallery").value;  // Added gallery parameter
+	const gallery = document.getElementById("gallery").value;  
 	
-	// AJAX request
 	$.ajax({
-	  url: 'filter_products.php', // URL of the PHP script
+	  url: 'filter_products.php', 
 	  type: 'GET',
 	  data: {
 		search: search,
@@ -542,10 +539,10 @@ function applyFilters(event) {
 		date_to: dateTo,
 		price_from: priceFrom,
 		price_to: priceTo,
-		gallery: gallery  // Send gallery filter data
+		gallery: gallery  
 	  },
 	  success: function(response) {
-		$('#productTableBody').html(response); // Update the table body with the response
+		$('#productTableBody').html(response); 
 	  },
 	  error: function(error) {
 		console.error("Error loading data:", error);
@@ -553,3 +550,20 @@ function applyFilters(event) {
 	});
   }
   
+  function isNumber(evt) {
+    evt = (evt) ? evt : window.event;
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    var inputValue = evt.target.value;
+
+    // Kiểm tra nếu ký tự không phải là số (48-57) hoặc dấu chấm (46)
+    if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode !== 46) {
+        return false;  // Chặn các ký tự không phải là số và dấu chấm
+    }
+
+    // Kiểm tra nếu đã có dấu chấm trong input, nếu có thì không cho phép thêm dấu chấm
+    if (charCode === 46 && inputValue.indexOf('.') !== -1) {
+        return false;  // Chặn dấu chấm nếu đã có trong input
+    }
+
+    return true;  // Chỉ cho phép số và một dấu chấm
+}

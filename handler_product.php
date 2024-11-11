@@ -3,8 +3,6 @@ require_once 'includes/db.inc.php';
 require_once './includes/functions.php';
 
 
-
-
 $categoryQuery = "SELECT id, name_ FROM property WHERE type_ = 'category'";
 $categoryStmt = $pdo->prepare($categoryQuery);
 $categoryStmt->execute();
@@ -19,7 +17,6 @@ $tags = $tagStmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (isset($_POST['action_type'])) {
     $action_type = $_POST['action_type'];
-
     
     if ($action_type === 'edit_product') { 
   
@@ -73,7 +70,6 @@ if (isset($_POST['action_type'])) {
             $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
             $stmt->execute();
         
-          
         
             // Process each uploaded image
             foreach ($gallery_images['name'] as $key => $name) {
@@ -241,19 +237,31 @@ if (isset($_POST['action_type'])) {
             ];
         }
 
+        $query = "SELECT COUNT(*) FROM products WHERE sku = :sku";
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':sku', $sku);
+        $stmt->execute();
+        $count = $stmt->fetchColumn();
+        if($count > 0){
+            $errors[] = [
+                'field' => 'exist',
+                'message' => 'exist'
+            ];
+        }
+
+        
+        if (empty($product_name) || empty($sku) || empty($price) || $featured_image['error'] === UPLOAD_ERR_NO_FILE) {
+            $errors[] = [
+                'field' => 'empty',
+                'message' => ' At least one field is required.'
+            ];
+        }
+
+
         if (!empty($errors)) {
             $res = [
                 'status' => '400',
                 'errors' => $errors
-            ];
-            echo json_encode($res);
-            return;
-        }
-
-        if (empty($product_name) || empty($sku) || empty($price) || $featured_image['error'] === UPLOAD_ERR_NO_FILE) {
-            $res = [
-                'status' => 422,
-                'message' => ' At least one field is required.'
             ];
             echo json_encode($res);
             return;
@@ -264,7 +272,22 @@ if (isset($_POST['action_type'])) {
             $file_name = $featured_image['name'];
             move_uploaded_file($featured_image['tmp_name'], 'uploads/' . $file_name);
 
-            $product_id = insert_product($pdo, $product_name, $sku, $price, $file_name);
+            $query = "SELECT COUNT(*) FROM products WHERE sku = :sku";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(':sku', $sku);
+            $stmt->execute();
+            $count = $stmt->fetchColumn();
+            if($count > 0){
+                $res = [
+                    'status' => 400,
+                    'sku' => 'exist'
+                ];
+                echo json_encode($res);
+                return;
+            }else{
+                $product_id = insert_product($pdo, $product_name, $sku, $price, $file_name);
+            }
+
             if (!$product_id) {
                 echo json_encode(['status' => 500, 'message' => 'Failed to insert product.']);
                 return;

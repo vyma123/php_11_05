@@ -5,7 +5,6 @@
     <div class="header">
     Product Name, SKU, Price, and Featured Image are required fields.  </div>
     </div>
-
     <div id="err_valid_Message_product" class="ui negative message d-none">
   <div class="header">
   don't allow special character.  </div>
@@ -23,6 +22,12 @@
   <div id="err_valid_Message_price" class="ui negative message d-none">
   <div class="header">
   Price just allow numbers.  </div>
+  </div>
+  <div id="err_valid_Message_sku" class="ui message negative d-none">
+  <div class="header">
+   sku exist 
+  </div>
+
   </div>
   <!-- form -->
   <form class="ui form form_add_products" class='editProduct' id="saveProduct" enctype="multipart/form-data">

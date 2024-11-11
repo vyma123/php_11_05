@@ -11,7 +11,6 @@ $page = filter_var($page, FILTER_VALIDATE_INT) !== false ? (int)$page : 1;
 
 $start_from = ($page - 1) * $per_page_record;
 
-// Fetching products with pagination
 $query = "SELECT * FROM products LIMIT :start_from, :per_page";
 $stmt = $pdo->prepare($query);
 $stmt->bindParam(':start_from', $start_from, PDO::PARAM_INT);
@@ -46,13 +45,13 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     }
     #galleryPreviewContainer {
-    overflow-x: auto; /* Enables horizontal scroll */
-    white-space: nowrap; /* Prevents images from wrapping to the next line */
+    overflow-x: auto; 
+    white-space: nowrap; 
 }
 
 #galleryPreviewContainer img {
     height: 80px;
-    display: inline-block; /* Aligns images side by side */
+    display: inline-block; 
 }
 
     .form_add_products{
@@ -67,7 +66,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
     .edit_button {
     border: none;
     cursor: pointer;
-    border-radius: 5px; /* Optional: rounded corners */
+    border-radius: 5px; 
     background-color: #fff;
 }
 
@@ -76,6 +75,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 #editProductButton{
+    
 }
 
 #addProductButton{
@@ -100,6 +100,13 @@ table thead .date{
 .select_tag{
     width: 100px;
 }
+.box_table{
+
+    height: 400px;
+    overflow-y: auto;  
+    margin-bottom: 20px; 
+}
+
 
 
 
@@ -115,11 +122,9 @@ table thead .date{
 
 <body>
 
-<!-- popup add product -->
 <?php include('model_add_product.php');?>
 <?php include('model_add_property.php');?>
 
-<!-- close popup add product -->
 
     <section class="container">
         <h1>PHP1</h1>
@@ -132,7 +137,7 @@ table thead .date{
                 </div>
                 <div class="ui icon input">
                     <input id="search" type="text" placeholder="Search product..." value="">
-                    <i class="inverted circular search link icon"></i>
+                    <i onclick="applyFilters(event)"  class="inverted circular search link icon"></i>
                 </div>
             </div>
             <div class="product_header_bottom">
@@ -175,8 +180,8 @@ table thead .date{
                 </select>
                 <div class="ui input"><input type="date" id="date_from"></div>
                 <div class="ui input"><input type="date" id="date_to"></div>
-                <div class="ui input"><input type="text" id="price_from" placeholder="price from"></div>
-                <div class="ui input"><input type="text" id="price_to" placeholder="price to"></div>
+                <div class="ui input"><input  onkeypress="return isNumber(event)" type="number" id="price_from" placeholder="price from"></div>
+                <div class="ui input"><input  onkeypress="return isNumber(event)" type="number" id="price_to" placeholder="price to"></div>
                 <button onclick="applyFilters(event)" class="ui button">Filter</button>
             </div>
         </div>
@@ -273,7 +278,7 @@ table thead .date{
       <input  type="hidden" name="id" id="id">
 
 
-        <button type="submit"  value="<?= $row['id']?>" class="edit_button" >
+        <button type="submit"   value="<?= $row['id']?>" class="edit_button" >
         <i class="edit icon"></i>
         </button>
       
@@ -292,53 +297,72 @@ table thead .date{
 </div>
 
 
-<div class="pagination_box">    
-<div class="ui pagination menu">
+<!-- pagination -->
+<div id="paginationBox" class="pagination_box">
+    <div class="ui pagination menu">
+        <?php
+            $query = "SELECT COUNT(*) FROM products";
+            $count_stmt = $pdo->prepare($query);
+            $count_stmt->execute();
+            $total_records = $count_stmt->fetchColumn();
+            $total_pages = ceil($total_records / $per_page_record);
 
-      <?php  
-        echo "</br>";
-        $query = "SELECT COUNT(*) FROM products"; 
-        $count_stmt = $pdo->prepare($query);
-        $count_stmt->execute();   
-        $total_records = $count_stmt->fetchColumn();
-          
-    echo "</br>";     
-        $total_pages = ceil($total_records / $per_page_record);  
+            if ($page > 1) {
+                echo "<a  class='item' data-page='".($page - 1)."'>Prev</a>";
+            } else {
+                echo "<a class='item '>Prev</a>";
+            }
 
-        $pagLink = "";       
-      
-        if($page>=2){   
-            echo "<a class='item' href='index.php?page=".($page-1)."'>  Prev </a>";   
-        }else{
-            echo "<a class='item disabled'> Prev </a>";
+            for ($i = 1; $i <= $total_pages; $i++) {
+                $active_class = ($i == $page) ? 'active' : '';
+                echo "<a class='item $active_class' data-page='$i'>$i</a>";
+            }
 
-        }       
-                   
-        for ($i=1; $i<=$total_pages; $i++) {   
-          if ($i == $page) {   
-              $pagLink .= "<a class = 'item active' href='index.php?page="  
-                                                .$i."'>".$i." </a>";   
-          }               
-          else  {   
-              $pagLink .= "<a class='item' href='index.php?page=".$i."'>   
-                                                ".$i." </a>";     
-          }   
-        };     
-        echo $pagLink;   
-  
-        if($page<$total_pages){   
-            echo "<a class='item' href='index.php?page=".($page+1)."'>  Next </a>";   
-        }   else {
-            echo "<a class='item disabled'> Next </a>"; 
-        }
-      ?>    
-      </div>  
-      </div>  
+            if ($page < $total_pages) {
+                echo "<a class='item' data-page='".($page + 1)."'>Next</a>";
+            } else {
+                echo "<a class='item disabled'>Next</a>";
+            }
+        ?>
+    </div>
+</div>
+
 
 
 </section>
 <script src="./jquery/my_jquery_functions.js">
-    
+
+   
+
+</script>
+<script>
+$(document).ready(function() {
+    $('#paginationBox').on('click', '.item', function(e) {
+        e.preventDefault();
+        const page = $(this).data('page');
+
+        if (page) {
+            $.ajax({
+                url: 'fetch_products.php',
+                type: 'GET',
+                data: { page: page },
+                dataType: 'json', // Expect JSON response
+                success: function(response) {
+                    // Update product table
+                    $('#productTableBody').html(response.products);
+
+                    // Update pagination links
+                    $('#paginationBox .ui.pagination.menu').html(response.pagination);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching data: ", error);
+                }
+            });
+        }
+    });
+});
+
+
 </script>
 
 
